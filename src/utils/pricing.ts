@@ -2,6 +2,8 @@
 import { ONE_BD, ZERO_BD, ZERO_BI } from './constants'
 import { Bundle, Pool, Token } from './../types/schema'
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
+import { log } from '@graphprotocol/graph-ts'
+
 import { exponentToBigDecimal, safeDiv } from '../utils/index'
 import {
   MINIMUM_ETH_LOCKED,
@@ -13,7 +15,21 @@ import {
 } from '../networkConstants/constants'
 
 let Q192 = 2 ** 192
-export function sqrtPriceX96ToTokenPrices(sqrtPriceX96: BigInt, token0: Token, token1: Token): BigDecimal[] {
+export function sqrtPriceX96ToTokenPrices(sqrtPriceX96: BigInt, token0: Token | null, token1: Token | null): BigDecimal[] {
+
+  if (token0 == null) {
+    log.critical('sqrtPriceX96ToTokenPrices TOKEN0 NOT FOUND!', [])
+    return [ZERO_BD, ZERO_BD]
+  }
+
+
+
+  if (token1 == null) {
+    log.critical('sqrtPriceX96ToTokenPrices TOKEN0 NOT FOUND!', [])
+    return [ZERO_BD, ZERO_BD]
+  }
+
+
   let num = sqrtPriceX96.times(sqrtPriceX96).toBigDecimal()
   let denom = BigDecimal.fromString(Q192.toString())
   let price1 = num
@@ -43,7 +59,11 @@ export function getEthPriceInUSD(): BigDecimal {
  * Search through graph to find derived Eth per token.
  * @todo update to be derived ETH (add stablecoin estimates)
  **/
-export function findEthPerToken(token: Token): BigDecimal {
+export function findEthPerToken(token: Token | null): BigDecimal {
+  if (token == null) {
+    return ZERO_BD
+  }
+
   if (token.id == WETH_ADDRESS) {
     return ONE_BD
   }
@@ -194,39 +214,64 @@ export class AmountType {
 
 export function getAdjustedAmounts(
   tokenAmount0: BigDecimal,
-  token0: Token,
+  token0: Token | null,
   tokenAmount1: BigDecimal,
-  token1: Token
+  token1: Token | null
 ): AmountType {
   let derivedETH0 = token0.derivedETH
   let derivedETH1 = token1.derivedETH
   let bundle = Bundle.load('1')
+  log.info('get-adjusted-amounts', [])
 
-  if (bundle === null) {
+  if (token0 === null) {
+    log.critical('TOKEN 0 NOT FOUND!', [])
     return { eth: ZERO_BD, usd: ZERO_BD, ethUntracked: ZERO_BD, usdUntracked: ZERO_BD }
   }
 
+  if (token1 === null) {
+    log.critical('TOKEN 1 NOT FOUND!', [])
+    return { eth: ZERO_BD, usd: ZERO_BD, ethUntracked: ZERO_BD, usdUntracked: ZERO_BD }
+  }
+
+
+  if (bundle === null) {
+    log.info('\'get-adjusted-amounts: bundle not set early exit', [])
+    return { eth: ZERO_BD, usd: ZERO_BD, ethUntracked: ZERO_BD, usdUntracked: ZERO_BD }
+  }
+  log.info('token0: {}', [token0.id])
+  log.info('token1: {}', [token1.id])
+  log.info('derivedETH0: {}',[derivedETH0.toString()])
+  log.info('derivedETH1: {}', [derivedETH1.toString()])
+  log.info('bundle.ethPriceUSD: {}', [bundle.ethPriceUSD.toString()])
+  log.info('tokenAmount0: {}', [tokenAmount0.toString()])
+  log.info('tokenAmount1: {}', [tokenAmount1.toString()])
+
   let eth = ZERO_BD
   let ethUntracked = tokenAmount0.times(derivedETH0).plus(tokenAmount1.times(derivedETH1))
+  log.info('ethUntracked: {}', [ethUntracked.toString()])
 
   // both are whitelist tokens, return sum of both amounts
   if (WHITELIST_TOKENS.includes(token0.id) && WHITELIST_TOKENS.includes(token1.id)) {
+    log.info('get-adjusted-amounts: both whitelisted', [])
     eth = ethUntracked
   }
 
   // take double value of the whitelisted token amount
   if (WHITELIST_TOKENS.includes(token0.id) && !WHITELIST_TOKENS.includes(token1.id)) {
+    log.info('get-adjusted-amounts: token0 whitelisted', [])
     eth = tokenAmount0.times(derivedETH0).times(BigDecimal.fromString('2'))
   }
 
   // take double value of the whitelisted token amount
   if (!WHITELIST_TOKENS.includes(token0.id) && WHITELIST_TOKENS.includes(token1.id)) {
+    log.info('get-adjusted-amounts: token1 whitelisted', [])
     eth = tokenAmount1.times(derivedETH1).times(BigDecimal.fromString('2'))
   }
 
   // Define USD values based on ETH derived values.
   let usd = eth.times(bundle.ethPriceUSD)
   let usdUntracked = ethUntracked.times(bundle.ethPriceUSD)
-
+  log.info('usd: {}', [usd.toString()])
+  log.info('usdUntracked: {}', [usdUntracked.toString()])
   return { eth, usd, ethUntracked, usdUntracked }
 }

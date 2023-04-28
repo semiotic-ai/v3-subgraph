@@ -11,13 +11,24 @@ import {
   Bundle,
   PoolHourData
 } from './../types/schema'
-import { BigDecimal, ethereum } from '@graphprotocol/graph-ts'
+import {BigDecimal, ethereum, log} from '@graphprotocol/graph-ts'
 
 /**
  * Tracks global aggregate data over daily windows
  * @param event
  */
-export function updateUniswapDayData(uniswap: Factory, event: ethereum.Event): UniswapDayData {
+export function updateUniswapDayData(uniswap: Factory | null, event: ethereum.Event): UniswapDayData {
+  if (uniswap == null) {
+    log.critical('updateUniswapDayData NOT FOUND!', [])
+    let temp = new UniswapDayData("SF")
+    temp.date = 1
+    temp.volumeETH = ZERO_BD
+    temp.volumeUSD = ZERO_BD
+    temp.volumeUSDUntracked = ZERO_BD
+    temp.feesUSD = ZERO_BD
+    return temp as UniswapDayData
+  }
+
   let timestamp = event.block.timestamp.toI32()
   let dayID = timestamp / 86400 // rounded
   let dayStartTimestamp = dayID * 86400
@@ -36,7 +47,27 @@ export function updateUniswapDayData(uniswap: Factory, event: ethereum.Event): U
   return uniswapDayData as UniswapDayData
 }
 
-export function updatePoolDayData(pool: Pool, event: ethereum.Event): PoolDayData {
+export function updatePoolDayData(pool: Pool | null, event: ethereum.Event): PoolDayData {
+  if (pool == null) {
+    log.critical('updatePoolDayData NOT FOUND!', [])
+    let temp = new PoolDayData("sf")
+    temp.date = 1
+    temp.pool = pool.id
+    temp.volumeToken0 = ZERO_BD
+    temp.volumeToken1 = ZERO_BD
+    temp.volumeUSD = ZERO_BD
+    temp.feesUSD = ZERO_BD
+    temp.txCount = ZERO_BI
+    temp.feeGrowthGlobal0X128 = ZERO_BI
+    temp.feeGrowthGlobal1X128 = ZERO_BI
+    temp.open = ZERO_BD
+    temp.high = ZERO_BD
+    temp.low = ZERO_BD
+    temp.close = ZERO_BD
+    return temp as PoolDayData
+  }
+
+
   let timestamp = event.block.timestamp.toI32()
   let dayID = timestamp / 86400
   let dayStartTimestamp = dayID * 86400
@@ -84,7 +115,26 @@ export function updatePoolDayData(pool: Pool, event: ethereum.Event): PoolDayDat
   return poolDayData as PoolDayData
 }
 
-export function updatePoolHourData(pool: Pool, event: ethereum.Event): PoolHourData {
+export function updatePoolHourData(pool: Pool | null, event: ethereum.Event): PoolHourData {
+  if (pool == null) {
+    log.critical('updatePoolHourData NOT FOUND!', [])
+    let temp = new PoolHourData("sf")
+    temp.periodStartUnix = 1
+    temp.pool = pool.id
+    temp.volumeToken0 = ZERO_BD
+    temp.volumeToken1 = ZERO_BD
+    temp.volumeUSD = ZERO_BD
+    temp.feesUSD = ZERO_BD
+    temp.txCount = ZERO_BI
+    temp.feeGrowthGlobal0X128 = ZERO_BI
+    temp.feeGrowthGlobal1X128 = ZERO_BI
+    temp.open = ZERO_BD
+    temp.high = ZERO_BD
+    temp.low = ZERO_BD
+    temp.close = ZERO_BD
+    return temp as PoolHourData
+  }
+
   let timestamp = event.block.timestamp.toI32()
   let hourIndex = timestamp / 3600 // get unique hour within unix history
   let hourStartUnix = hourIndex * 3600 // want the rounded effect
@@ -135,7 +185,23 @@ export function updatePoolHourData(pool: Pool, event: ethereum.Event): PoolHourD
   return poolHourData as PoolHourData
 }
 
-export function updateTokenDayData(token: Token, event: ethereum.Event): TokenDayData {
+export function updateTokenDayData(token: Token | null, event: ethereum.Event): TokenDayData {
+  if (token == null) {
+    log.critical('updateTokenDayData NOT FOUND!', [])
+    let temp = new TokenDayData("sf")
+    temp.date = 1
+    temp.token = token.id
+    temp.volume = ZERO_BD
+    temp.volumeUSD = ZERO_BD
+    temp.feesUSD = ZERO_BD
+    temp.volumeUSDUntracked = ZERO_BD
+    temp.open = ZERO_BD
+    temp.high = ZERO_BD
+    temp.low = ZERO_BD
+    temp.close = ZERO_BD
+    return temp as TokenDayData
+  }
+
   let bundle = Bundle.load('1')
   let timestamp = event.block.timestamp.toI32()
   let dayID = timestamp / 86400
@@ -182,7 +248,22 @@ export function updateTokenDayData(token: Token, event: ethereum.Event): TokenDa
   return tokenDayData as TokenDayData
 }
 
-export function updateTokenHourData(token: Token, event: ethereum.Event): TokenHourData {
+export function updateTokenHourData(token: Token | null, event: ethereum.Event): TokenHourData {
+  if (token == null) {
+    log.critical('updateTokenDayData NOT FOUND!', [])
+    let temp = new TokenHourData("sf")
+    temp.periodStartUnix = 1
+    temp.token = token.id
+    temp.volume = ZERO_BD
+    temp.volumeUSD = ZERO_BD
+    temp.feesUSD = ZERO_BD
+    temp.volumeUSDUntracked = ZERO_BD
+    temp.open = ZERO_BD
+    temp.high = ZERO_BD
+    temp.low = ZERO_BD
+    temp.close = ZERO_BD
+    return temp as TokenHourData
+  }
   let bundle = Bundle.load('1')
   let timestamp = event.block.timestamp.toI32()
   let hourIndex = timestamp / 3600 // get unique hour within unix history

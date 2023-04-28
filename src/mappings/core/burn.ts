@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 import { Bundle, Factory, Pool, Burn, Token } from '../../types/schema'
-import { BigInt } from '@graphprotocol/graph-ts'
+import {BigInt, log} from '@graphprotocol/graph-ts'
 import { Burn as BurnEvent } from '../../types/templates/Pool/Pool'
 import { convertTokenToDecimal, loadTransaction } from '../../utils'
 import { ONE_BI } from '../../utils/constants'
@@ -80,6 +80,12 @@ export function handleBurn(event: BurnEvent): void {
   burn.tickLower = BigInt.fromI32(event.params.tickLower)
   burn.tickUpper = BigInt.fromI32(event.params.tickUpper)
   burn.logIndex = event.logIndex
+
+  if (factory == null) {
+      log.critical('FACTORY NOT FOUND!', [])
+      return
+  }
+
 
   updateUniswapDayData(factory, event)
   updatePoolDayData(pool, event)

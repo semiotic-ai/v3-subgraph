@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 import { Bundle, Factory, Mint, Pool, Token } from '../../types/schema'
-import { BigInt } from '@graphprotocol/graph-ts'
+import {BigInt, log} from '@graphprotocol/graph-ts'
 import { Mint as MintEvent } from '../../types/templates/Pool/Pool'
 import { convertTokenToDecimal, loadTransaction } from '../../utils'
 import { updateDerivedTVLAmounts } from '../../utils/tvl'

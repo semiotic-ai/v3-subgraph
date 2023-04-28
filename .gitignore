@@ -4,3 +4,4 @@ src/types/
 src/networkConstants/constants.ts
 .DS_STORE
 yarn-error.log
+.idea

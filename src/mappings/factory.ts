@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 
-import { ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO } from './../utils/constants'
+import {ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, ONE_BD} from './../utils/constants'
 import { Factory } from '../types/schema'
 import { PoolCreated } from '../types/Factory/Factory'
 import { Pool, Token, Bundle } from '../types/schema'
@@ -11,9 +11,8 @@ import { WHITELIST_TOKENS, ERROR_POOL, FACTORY_ADDRESS } from '../networkConstan
 import { populateEmptyPools } from '../utils/backfill'
 
 export function handlePoolCreated(event: PoolCreated): void {
-  if (event.params.pool == Address.fromHexString(ERROR_POOL)) {
-    return
-  }
+  log.critical('YOU ARE HERE2!', [])
+  return
 
   // load factory
   let factory = Factory.load(FACTORY_ADDRESS)
@@ -22,7 +21,7 @@ export function handlePoolCreated(event: PoolCreated): void {
     factory.poolCount = ZERO_BI
     factory.volumeETH = ZERO_BD
     factory.volumeUSD = ZERO_BD
-    factory.volumeUSDUntracked = ZERO_BD
+    factory.volumeUSDUntracked = ONE_BD
     factory.feesUSD = ZERO_BD
     factory.feesETH = ZERO_BD
     factory.totalValueLockedETH = ZERO_BD

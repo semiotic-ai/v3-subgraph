@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 import { Bundle, Factory, Pool, Swap, Token } from '../../types/schema'
-import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
+import {BigDecimal, BigInt, log} from '@graphprotocol/graph-ts'
 import { Swap as SwapEvent } from '../../types/templates/Pool/Pool'
 import { convertTokenToDecimal, loadTransaction } from '../../utils'
 import { ONE_BI, TWO_BD, ZERO_BD } from '../../utils/constants'
@@ -49,7 +49,27 @@ export function handleSwap(event: SwapEvent): void {
   // Calculate volume amounts. Need to divide derived amounts by 2 so volume is not counted on both sides of swap.
   let amount0Abs = amount0.times(BigDecimal.fromString(amount0.lt(ZERO_BD) ? '-1' : '1'))
   let amount1Abs = amount1.times(BigDecimal.fromString(amount1.lt(ZERO_BD) ? '-1' : '1'))
+
+
+
+
+  log.info('handleSwap', [])
+  log.info('pool: {}', [pool.id])
+  log.info('token0: {} - {}', [token0.id, token0.decimals.toString()])
+  log.info('token1: {} - {}', [token1.id, token1.decimals.toString()])
+  log.info('Raw Amount0: {}', [event.params.amount0.toString()])
+  log.info('Raw Amount1: {}', [event.params.amount1.toString()])
+  log.info('Amount0: {}', [amount0Abs.toString()])
+  log.info('Amount1: {}', [amount1Abs.toString()])
+
   let volumeAmounts: AmountType = getAdjustedAmounts(amount0Abs, token0, amount1Abs, token1)
+
+  log.info('volumeAmounts.eth: {}',[volumeAmounts.eth.toString()])
+  log.info('volumeAmounts.usd: {}',[volumeAmounts.usd.toString()])
+  log.info('volumeAmounts.ethUntracked: {}',[volumeAmounts.ethUntracked.toString()])
+  log.info('volumeAmounts.usdUntracked: {}',[volumeAmounts.usdUntracked.toString()])
+
+
   let volumeETH = volumeAmounts.eth.div(TWO_BD)
   let volumeUSD = volumeAmounts.usd.div(TWO_BD)
   let volumeUSDUntracked = volumeAmounts.usdUntracked.div(TWO_BD)
