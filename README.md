@@ -23,8 +23,8 @@ Then, run the graph codegen and build to prepare for deployment.
 Run the following in your cli:
 
 ```
-NETWORK=mainnet yarn run prepare-const mainnet
-NETWORK=mainnet yarn run prepare-yaml mainnet
+NETWORK=mainnet yarn run prepare-const
+NETWORK=mainnet yarn run prepare-yaml
 yarn codegen
 yarn build
 ```

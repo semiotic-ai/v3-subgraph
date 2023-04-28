@@ -11,8 +11,8 @@ import { WHITELIST_TOKENS, ERROR_POOL, FACTORY_ADDRESS } from '../networkConstan
 import { populateEmptyPools } from '../utils/backfill'
 
 export function handlePoolCreated(event: PoolCreated): void {
-  log.critical('YOU ARE HERE2!', [])
-  return
+  // log.critical('YOU ARE HERE2!', [])
+  // return
 
   // load factory
   let factory = Factory.load(FACTORY_ADDRESS)

@@ -24,5 +24,10 @@
   },
   "dependencies": {
     "mustache": "^4.2.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "ipfs-http-client@34.0.0>concat-stream": "github:mihirgupta0900/concat-stream#master"
+    }
   }
 }

@@ -50,9 +50,6 @@ export function handleSwap(event: SwapEvent): void {
   let amount0Abs = amount0.times(BigDecimal.fromString(amount0.lt(ZERO_BD) ? '-1' : '1'))
   let amount1Abs = amount1.times(BigDecimal.fromString(amount1.lt(ZERO_BD) ? '-1' : '1'))
 
-
-
-
   log.info('handleSwap', [])
   log.info('pool: {}', [pool.id])
   log.info('token0: {} - {}', [token0.id, token0.decimals.toString()])
@@ -68,7 +65,6 @@ export function handleSwap(event: SwapEvent): void {
   log.info('volumeAmounts.usd: {}',[volumeAmounts.usd.toString()])
   log.info('volumeAmounts.ethUntracked: {}',[volumeAmounts.ethUntracked.toString()])
   log.info('volumeAmounts.usdUntracked: {}',[volumeAmounts.usdUntracked.toString()])
-
 
   let volumeETH = volumeAmounts.eth.div(TWO_BD)
   let volumeUSD = volumeAmounts.usd.div(TWO_BD)
