@@ -35,12 +35,20 @@ yarn build
 ./up.sh -c # -c will clean the local dirs
 ```
 
-2. Run the graph-node in another therminal with this command
+2. In another terminal, run the graph-node in another therminal with this command
 ```bash
 cargo run -- --config  ../../streamingFast/graph-node-dev/config/eth-mainnet-substreams.toml --ipfs "localhost:5001"
 ```
 
-3. Check your graph version by typing in 
+3. Codegen, build, create and deploy the subgraph
+```bash
+pnpm install # to install the dependencies
+yarn codegen # to codegen all the files and types
+yarn build # this will run graph build under the covers
+graph create minimal --node http://127.0.0.1:8020
+```
+
+Check your graph version by typing in 
 ```bash
 graph
 ```
@@ -65,4 +73,4 @@ You then need to run with the node_modules' version of the cli by running:
 
 ```bash
 ./node_modules/.bin/graph deploy --node http://127.0.0.1:8020 --ipfs http://127.0.0.1:5001  minimal ./subgraph.yaml
-``
+```
