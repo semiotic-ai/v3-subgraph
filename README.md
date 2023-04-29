@@ -28,3 +28,41 @@ NETWORK=mainnet yarn run prepare-yaml
 yarn codegen
 yarn build
 ```
+
+### Running the subgraph locally
+1. In one terminal go have the `./up.sh` script running from the `graph-node-dev` repo.
+```bash
+./up.sh -c # -c will clean the local dirs
+```
+
+2. Run the graph-node in another therminal with this command
+```bash
+cargo run -- --config  ../../streamingFast/graph-node-dev/config/eth-mainnet-substreams.toml --ipfs "localhost:5001"
+```
+
+3. Check your graph version by typing in 
+```bash
+graph
+```
+
+If the version is not something like 0.2*.* or you see errors like this
+
+```bash
+  Skip migration: Bump mapping apiVersion from 0.0.1 to 0.0.2 (graph-ts dependency not installed yet)
+✔ Apply migrations
+✖ Failed to load subgraph from build/subgraph.yaml: Error in build/subgraph.yaml:
+
+  Path: dataSources > 0 > source
+  Unexpected key in map: startBlock
+
+  Path: /
+  Unexpected key in map: templates
+```
+
+Then this means that the version of your `graph-cli` is too recent.
+
+You then need to run with the node_modules' version of the cli by running:
+
+```bash
+./node_modules/.bin/graph deploy --node http://127.0.0.1:8020 --ipfs http://127.0.0.1:5001  minimal ./subgraph.yaml
+``
