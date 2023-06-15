@@ -213,7 +213,7 @@ export function updateTokenDayData(token: Token | null, event: ethereum.Event): 
 
   let tokenPrice: BigDecimal = ZERO_BD
   if (bundle) {
-    token.derivedETH.times(bundle.ethPriceUSD)
+    tokenPrice = token.derivedETH.times(bundle.ethPriceUSD)
   }
 
   let tokenDayData = TokenDayData.load(tokenDayID)
@@ -276,7 +276,7 @@ export function updateTokenHourData(token: Token | null, event: ethereum.Event):
 
   let tokenPrice: BigDecimal = ZERO_BD
   if (bundle) {
-    token.derivedETH.times(bundle.ethPriceUSD)
+    tokenPrice = token.derivedETH.times(bundle.ethPriceUSD)
   }
 
   if (tokenHourData === null) {
