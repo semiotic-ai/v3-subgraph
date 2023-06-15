@@ -40,7 +40,14 @@ yarn build
 cargo run -- --config  ../../streamingFast/graph-node-dev/config/eth-mainnet-substreams.toml --ipfs "localhost:5001"
 ```
 
-3. Codegen, build, create and deploy the subgraph
+3. Comment out the graft lines in the subgraph.yaml template file before running step 3
+```bash
+graft: 
+  base: {{graft_id}}
+  block: {{graft_block}}
+```
+
+4. Codegen, build, create and deploy the subgraph
 ```bash
 pnpm install # to install the dependencies
 yarn codegen # to codegen all the files and types
